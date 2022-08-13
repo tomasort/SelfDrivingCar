@@ -13,11 +13,11 @@ class Car {
         this.velocity = 0.0;
         this.acceleration = 0.2;
 
-        this.maxVelocity = 1;
+        this.maxVelocity = 2;
         this.friction = 0.05;
     }
 
-    update(){
+    #move(){
         if (this.controls.forward){
             this.velocity += this.acceleration;
         }
@@ -52,6 +52,11 @@ class Car {
         }
         this.x -= Math.sin(this.angle)*this.velocity;
         this.y -= Math.cos(this.angle)*this.velocity;
+
+    }
+
+    update(){
+        this.#move();
     }
 
     draw(ctx){
