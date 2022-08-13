@@ -8,33 +8,59 @@ class Car {
         this.height = height;
         // Car movement
         this.controls = new Controls;
-        this.x = x;
-        this.y = y;
+        this.angle = 0;
 
-        this.x_velocity = 0.0;
-        this.x_acceleration = 0.2;
+        this.velocity = 0.0;
+        this.acceleration = 0.2;
 
-        this.y_velocity = 0.0;
-        this.y_acceleration = 0.2;
+        this.maxVelocity = 1;
+        this.friction = 0.05;
     }
 
     update(){
         if (this.controls.forward){
-            this.y_velocity = this.y_velocity - this.y_acceleration;
-        }else if (this.controls.reverse){
-            this.y_velocity = this.y_velocity + this.y_acceleration;
-        }else if (this.controls.left){
-            this.x_velocity = this.x_velocity - this.x_acceleration;
-        }else if (this.controls.right){
-            this.x_velocity = this.x_velocity + this.x_acceleration;
+            this.velocity += this.acceleration;
         }
-        this.x = this.x + this.x_velocity;
-        this.y = this.y + this.y_velocity;
+        if (this.controls.reverse){
+            this.velocity -= this.acceleration;
+        }
+
+        if(this.velocity > this.maxVelocity){
+            this.velocity = this.maxVelocity;
+        }
+        if(this.velocity < -this.maxVelocity){
+            this.velocity = -this.maxVelocity;
+        }
+        if(this.velocity > 0){
+            this.velocity -= this.friction;
+        }
+        if(this.velocity < 0){
+            this.velocity += this.friction;
+        }
+        if(Math.abs(this.velocity) < this.friction){
+            this.velocity = 0;
+        }
+        if(this.velocity != 0){
+            const flip = this.velocity > 0 ? 1 : -1;
+            // Turns
+            if (this.controls.right){
+                this.angle -= flip * 0.03;
+            }
+            if (this.controls.left){
+                this.angle += flip * 0.03;
+            }
+        }
+        this.x -= Math.sin(this.angle)*this.velocity;
+        this.y -= Math.cos(this.angle)*this.velocity;
     }
 
     draw(ctx){
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(-this.angle);
+
         ctx.beginPath();
-        ctx.rect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+        ctx.rect(-this.width/2, -this.height/2, this.width, this.height);
         ctx.fill();
     }
 
