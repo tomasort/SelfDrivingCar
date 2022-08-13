@@ -8,7 +8,7 @@ class Controls{
     }
 
     #addKeyboardListeners(){
-        document.onkeydown=(event)=>{
+         document.onkeydown=(event)=>{
             switch(event.key){
                 case "ArrowLeft":
                     this.left = true;
@@ -16,14 +16,30 @@ class Controls{
                 case "ArrowRight":
                     this.right = true;
                     break;
-                case "ArrowForward":
+                case "ArrowUp":
                     this.forward = true;
                     break;
-                case "ArrowReverse":
+                case "ArrowDown":
                     this.reverse = true;
                     break;
             }
-            console.log("Changing directions!") 
         }
-    }
+         document.onkeyup=(event)=>{
+            switch(event.key){
+                case "ArrowLeft":
+                    this.left = false;
+                    break;
+                case "ArrowRight":
+                    this.right = false;
+                    break;
+                case "ArrowUp":
+                    this.forward = false;
+                    break;
+                case "ArrowDown":
+                    this.reverse = false;
+                    break;
+            }
+        }
+  }
+
 }
