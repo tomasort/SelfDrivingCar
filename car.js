@@ -15,6 +15,7 @@ class Car {
 
         this.maxVelocity = 2;
         this.friction = 0.05;
+        this.sensor = new Sensors(this);
     }
 
     #move(){
@@ -40,9 +41,10 @@ class Car {
         if(Math.abs(this.velocity) < this.friction){
             this.velocity = 0;
         }
+
+        // Turns
         if(this.velocity != 0){
             const flip = this.velocity > 0 ? 1 : -1;
-            // Turns
             if (this.controls.right){
                 this.angle -= flip * 0.03;
             }
@@ -57,6 +59,7 @@ class Car {
 
     update(){
         this.#move();
+        this.sensor.update();
     }
 
     draw(ctx){
@@ -67,6 +70,8 @@ class Car {
         ctx.beginPath();
         ctx.rect(-this.width/2, -this.height/2, this.width, this.height);
         ctx.fill();
+        ctx.restore();
+        this.sensor.draw(ctx);
     }
 
 }
