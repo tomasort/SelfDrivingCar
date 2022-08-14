@@ -1,22 +1,30 @@
 class Car {
 
-    constructor(x, y, width, height){
+    constructor(x, y, width, height, controlType, traffic){
+        let maxPlayerVelocity = 5;
+        let maxNPCVelocity = 2;
         // Position of the car
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         // Car movement
-        this.controls = new Controls;
+        this.controls = new Controls(controlType);
         this.angle = 0;
         this.collision = false;
 
         this.velocity = 0.0;
         this.acceleration = 0.2;
+        switch(controlType){
+            case "Player":
+                this.maxVelocity = maxPlayerVelocity;
+                this.sensor = new Sensors(this);
+                break;
+            case "NPC":
+                this.maxVelocity = maxNPCVelocity;
+        }
 
-        this.maxVelocity = 2;
         this.friction = 0.05;
-        this.sensor = new Sensors(this);
 
     }
 
@@ -87,22 +95,30 @@ class Car {
 
     }
 
-    #checkCollision(roadBorders){
+    #checkCollision(roadBorders, traffic){
         for(let i = 0; i < roadBorders.length; i++){
             if (polysIntersection(this.polygon, roadBorders[i])){
+                return true;
+            }
+        }
+        for(let i = 0; i < traffic.length; i++){
+            console.log(polysIntersection(this.polygon, traffic[i].polygon));
+            if (polysIntersection(this.polygon, traffic[i].polygon)){
                 return true;
             }
         }
         return false;
     }
 
-    update(roadBorders){
+    update(roadBorders, traffic){
         if (!this.collision){
             this.#move();
             this.polygon = this.#createPolygon();
-            this.collision = this.#checkCollision(roadBorders);
+            this.collision = this.#checkCollision(roadBorders, traffic);
         }
-        this.sensor.update(roadBorders);
+        if (this.sensor){
+            this.sensor.update(roadBorders, traffic);
+        }
     }
 
     draw(ctx){
@@ -117,7 +133,9 @@ class Car {
             ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
         ctx.fill();
-        this.sensor.draw(ctx);
+        if (this.sensor){
+            this.sensor.draw(ctx);
+        }
     }
 
 }
