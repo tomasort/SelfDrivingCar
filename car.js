@@ -19,6 +19,7 @@ class Car {
             case "Player":
                 this.maxVelocity = maxPlayerVelocity;
                 this.sensor = new Sensors(this);
+                this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
                 break;
             case "NPC":
                 this.maxVelocity = maxNPCVelocity;
@@ -102,7 +103,6 @@ class Car {
             }
         }
         for(let i = 0; i < traffic.length; i++){
-            console.log(polysIntersection(this.polygon, traffic[i].polygon));
             if (polysIntersection(this.polygon, traffic[i].polygon)){
                 return true;
             }
@@ -118,6 +118,11 @@ class Car {
         }
         if (this.sensor){
             this.sensor.update(roadBorders, traffic);
+            const offsets = this.sensor.readings.map(
+                s => s == null ? 0 : 1 - s.offset
+            );
+            const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+            console.log(outputs);
         }
     }
 
